@@ -3,3 +3,5 @@ django-filter
 django-rest-framework
 djoser
 djangorestframework_simplejwt
+gunicorn
+psycopg2
