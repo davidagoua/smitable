@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 def get_random_code() -> str:
-    return f'SMT-{random.randint(100, 999)}'
+    return f'SMT-{random.randint(10000, 99999)}'
 
 
 class TimestampedModel(models.Model):
@@ -14,7 +14,7 @@ class TimestampedModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
     details = models.JSONField(null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, default=1)
 
     class Meta:
         abstract = True
@@ -47,9 +47,6 @@ class Patient(TimestampedModel):
     date_naissance = models.DateField()
     genre = models.CharField(max_length=10, choices=[('M', 'Homme'), ('F', 'Femme')], default='M')
     nationalite = models.CharField(max_length=200)
-    ville = models.CharField(max_length=100, null=True, blank=True)
-    commune = models.CharField(max_length=100, null=True, blank=True)
-    quartier = models.CharField(max_length=100, null=True, blank=True)
     code_patient = models.CharField(max_length=100, blank=True)
     status = models.PositiveIntegerField(default=0)
     profession = models.CharField(max_length=100, null=True, blank=True)
@@ -62,6 +59,20 @@ class Patient(TimestampedModel):
 
     def __str__(self):
         return f'{self.prenoms} {self.nom}'
+
+
+class Domicile(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='domiciles')
+    pays = models.CharField(max_length=200, null=True, blank=True)
+    date_debut = models.DateField(null=True, blank=True)
+    date_fin = models.DateField(null=True, blank=True)
+    ville = models.CharField(max_length=100, null=True, blank=True)
+    commune = models.CharField(max_length=100, null=True, blank=True)
+    quartier = models.CharField(max_length=100, null=True, blank=True)
+
+    @property
+    def actuel(self) -> bool:
+        return self.date_fin is None
 
 
 class Consultation(TimestampedModel):
@@ -161,5 +172,21 @@ class RendezVous(TimestampedModel):
     date = models.DateTimeField()
     state = models.PositiveIntegerField(default=0)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, null=True)
+
+
+class UniteHospitalisation(models.Model):
+    nom = models.CharField(max_length=100)
+    capacite = models.PositiveIntegerField(default=1)
+    type = models.CharField(max_length=100)
+
+    def __str__(self): return self.nom
+
+
+class Hospitalisation(TimestampedModel):
+    state = models.PositiveIntegerField(default=0)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    unite = models.ForeignKey(UniteHospitalisation, on_delete=models.CASCADE)
+
+
 
 

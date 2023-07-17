@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import PatientApiListView, PatientApiDetailView, ConsultationApiListView, ServiceListView, \
-    ConstanteApiListView, ServiceConsultationListView, RendezVousListView
+    ConstanteApiListView, ServiceConsultationListView, RendezVousListView, HospitalisationListView, UniteHospitalisationListView
 
 
 urlpatterns = [
@@ -10,5 +10,7 @@ urlpatterns = [
     path('services/', ServiceListView.as_view()),
     path('constantes/', ConstanteApiListView.as_view()),
     path('rdv/', RendezVousListView.as_view()),
+    path('unites/', UniteHospitalisationListView.as_view()),
+    path('hospitalisations/', HospitalisationListView.as_view()),
     path('services/<int:service_id>/consultations/', ServiceConsultationListView.as_view())
 ]

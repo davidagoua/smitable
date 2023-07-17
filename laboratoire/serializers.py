@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+import core.models
 from .models import TypeAnalyse, TechniqueAnalyse, AnalyseRapide, ProtocolAnalyse, Analyse, AnalysePatient
 from core import serializers as core_serializers
 
@@ -17,14 +19,10 @@ class TechniqueAnalyseSerializers(serializers.ModelSerializer):
 
 
 class AnalyseRapideSerializers(serializers.ModelSerializer):
-    patient_id = serializers.IntegerField()
-    patient = core_serializers.PatientSerializers(read_only=True)
-    technique_analyse = TechniqueAnalyseSerializers(read_only=True)
-    type_analyse = TypeAnalyseSerializers(read_only=True)
+
     class Meta:
         model = AnalyseRapide
         fields = '__all__'
-
 
 class ProtocolAnalyseSerializer(serializers.ModelSerializer):
 
@@ -43,8 +41,16 @@ class AnalyseSerializer(serializers.ModelSerializer):
 class AnalysePatientSerializer(serializers.ModelSerializer):
     patient_id = serializers.IntegerField()
     patient = core_serializers.PatientSerializers(read_only=True)
+    consultation_id = serializers.IntegerField()
+    consultation = core_serializers.ConsultationSerializers(read_only=True)
     analyse_id = serializers.IntegerField()
     analyse = AnalyseSerializer(read_only=True)
+    type_analyse = TypeAnalyseSerializers(read_only=True)
+    type_analyse_id = serializers.IntegerField()
+    technique_analyse = TechniqueAnalyseSerializers(read_only=True)
+    technique_analyse_id = serializers.IntegerField()
+
+
 
     class Meta:
         fields = '__all__'

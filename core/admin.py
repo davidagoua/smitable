@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Patient, Consultation, Constante, Service
+from .models import Patient, Consultation, Constante, Service, Hospitalisation, UniteHospitalisation, RendezVous
 
 
 @admin.register(Patient)
@@ -9,6 +9,10 @@ class PatientAdmin(admin.ModelAdmin):
         'nom','prenoms','date_naissance','lieu_naissance'
     ]
 
+
+@admin.register(Constante)
+class ConstanteAdmin(admin.ModelAdmin):
+    list_display = ['consultation', 'temperature']
 
 class ConsultationTabularInline(admin.TabularInline):
     model = Constante
@@ -30,3 +34,18 @@ class ServiceAdmin(admin.ModelAdmin):
     list_display = [
         'pk', 'nom','icon'
     ]
+
+
+@admin.register(UniteHospitalisation)
+class UniteHospitalisationAdmin(admin.ModelAdmin):
+    list_display = ['nom']
+
+
+@admin.register(Hospitalisation)
+class HospitalisationAdmin(admin.ModelAdmin):
+    list_display = ['patient']
+
+
+@admin.register(RendezVous)
+class RendezvousAdmin(admin.ModelAdmin):
+    list_display = ['patient', 'service', 'date']

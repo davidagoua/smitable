@@ -1,8 +1,24 @@
+import json
+
 from rest_framework import serializers
 from .models import *
 
 
+class DomicileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Domicile
+        fields = ['date_debut','date_fin',"pays", 'ville','commune','quartier']
+
+
 class PatientSerializers(serializers.ModelSerializer):
+    domiciles = DomicileSerializer(many=True)
+
+    def create(self, validated_data: dict):
+        domiciles = validated_data.pop('domiciles')
+        patient = Patient.objects.create(**validated_data)
+        for domicile in domiciles:
+            Domicile.objects.create(patient=patient, **domicile)
+        return patient
     class Meta:
         model = Patient
         exclude = []
@@ -17,12 +33,17 @@ class ConstanteSerializers(serializers.ModelSerializer):
                   'imc_status', 'temperature_status','tension_status',  'consultation_id', 'id', 'pouls_status')
 
 
+class ServiceSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = '__all__'
+
 class ConsultationSerializers(serializers.ModelSerializer):
     constante_set = ConstanteSerializers(many=True, label='contantes', read_only=True, allow_null=True)
     patient_id = serializers.IntegerField()
     patient = PatientSerializers(read_only=True)
-    motifs = serializers.StringRelatedField(many=True)
-    antecedents = serializers.StringRelatedField(many=True)
+    service_id = serializers.IntegerField(allow_null=True)
+    service = ServiceSerializers(read_only=True)
 
     class Meta:
         model = Consultation
@@ -31,6 +52,7 @@ class ConsultationSerializers(serializers.ModelSerializer):
 
 class PatientDetailSerializers(serializers.ModelSerializer):
     consultation_set = ConsultationSerializers(many=True, label='consultations', )
+    domiciles = DomicileSerializer(many=True)
 
     def create(self, validated_data):
         consultations_data = validated_data.pop('consultation_set')
@@ -44,12 +66,6 @@ class PatientDetailSerializers(serializers.ModelSerializer):
         exclude = []
 
 
-class ServiceSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = Service
-        fields = '__all__'
-
-
 class RendezVousSerializer(serializers.ModelSerializer):
     patient = PatientSerializers(read_only=True)
     patient_id = serializers.IntegerField()
@@ -57,3 +73,21 @@ class RendezVousSerializer(serializers.ModelSerializer):
     class Meta:
         model = RendezVous
         fields = '__all__'
+
+
+
+class UniteHospitalisationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UniteHospitalisation
+        fields = '__all__'
+
+
+
+class HospitalisationSerializer(serializers.ModelSerializer):
+    patient = PatientSerializers(read_only=True)
+    patient_id = serializers.IntegerField()
+    class Meta:
+        model = Hospitalisation
+        fields = '__all__'
+

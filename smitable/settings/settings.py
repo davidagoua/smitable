@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'laboratoire',
     'django_filters',
-    'djoser'
+    'djoser',
+    'pharmacy',
 ]
 
 MIDDLEWARE = [

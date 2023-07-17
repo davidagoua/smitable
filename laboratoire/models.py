@@ -15,6 +15,7 @@ class AnalyseRapide(core_models.TimestampedModel):
     type_analyse = models.ForeignKey(TypeAnalyse, on_delete=models.SET_NULL, null=True)
     technique_analyse = models.ForeignKey(TechniqueAnalyse, on_delete=models.SET_NULL, null=True)
     resultat = models.BooleanField(default=False)
+    consultation = models.ForeignKey(core_models.Consultation, on_delete=models.SET_NULL, null=True)
 
 
 class Analyse(models.Model):
@@ -31,7 +32,10 @@ class ProtocolAnalyse(models.Model):
 
 
 class AnalysePatient(core_models.TimestampedModel):
+    type_analyse = models.ForeignKey(TypeAnalyse, on_delete=models.SET_NULL, null=True)
+    technique_analyse = models.ForeignKey(TechniqueAnalyse, on_delete=models.SET_NULL, null=True)
     patient = models.ForeignKey(core_models.Patient, on_delete=models.SET_NULL, null=True)
-    analyse = models.ForeignKey(Analyse, on_delete=models.CASCADE)
+    analyse = models.ForeignKey(Analyse, on_delete=models.CASCADE, null=True)
     resultat = models.IntegerField(default=0)
     state = models.PositiveIntegerField(default=0)
+    consultation = models.ForeignKey(core_models.Consultation, on_delete=models.CASCADE, null=True)

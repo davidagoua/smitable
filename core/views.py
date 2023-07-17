@@ -5,20 +5,20 @@ from django.contrib.auth import login
 from rest_framework.authentication import TokenAuthentication
 from .serializers import PatientSerializers, \
     PatientDetailSerializers, ConsultationSerializers, ConstanteSerializers, \
-    ServiceSerializers, RendezVousSerializer
-from core.models import Patient, Consultation, Constante, Service, RendezVous
-
+    ServiceSerializers, RendezVousSerializer, HospitalisationSerializer, UniteHospitalisationSerializer, \
+    DomicileSerializer
+from core.models import Patient, Consultation, Constante, Service, RendezVous, Hospitalisation, \
+    UniteHospitalisation, Domicile
 
 
 class PatientApiListView(generics.ListCreateAPIView):
     serializer_class = PatientSerializers
     queryset = Patient.objects.all()
     authentication_classes = [TokenAuthentication]
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
     filter_backends = [filters.SearchFilter]
-    filterset_fields = ('code_patient', 'nom','prenoms')
+    filterset_fields = ('code_patient', 'nom', 'prenoms')
     search_fields = ['nom', 'prenoms', 'code_patient']
-
 
 
 class PatientApiDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -51,3 +51,13 @@ class ServiceConsultationListView(generics.ListAPIView):
 class RendezVousListView(generics.ListCreateAPIView):
     serializer_class = RendezVousSerializer
     queryset = RendezVous.objects.filter(state=0)
+
+
+class UniteHospitalisationListView(generics.ListCreateAPIView):
+    serializer_class = UniteHospitalisationSerializer
+    queryset = UniteHospitalisation.objects.all()
+
+
+class HospitalisationListView(generics.ListCreateAPIView):
+    serializer_class = HospitalisationSerializer
+    queryset = Hospitalisation.objects.all()

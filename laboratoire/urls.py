@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import TypeAnalyseListView, TechniqueAnalyseListView, AnalyseRapideListView, ProtocolAnalyseListView, \
-    AnalyseListView, AnalysePatientListView
+    AnalyseListView, AnalysePatientListView, AnalysePatientApiView
 
 urlpatterns = [
     path('type-analyses/', TypeAnalyseListView.as_view()),
@@ -9,4 +9,5 @@ urlpatterns = [
     path('protocol-analyses/', ProtocolAnalyseListView.as_view()),
     path('analyses/', AnalyseListView.as_view()),
     path('analyse-patient/', AnalysePatientListView.as_view()),
+    path('analysepatient/', AnalysePatientApiView.as_view()),
 ]
