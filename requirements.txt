@@ -2,6 +2,7 @@ django
 django-filter
 django-rest-framework
 djoser
+django-cors-headers
 djangorestframework_simplejwt
 gunicorn
 psycopg2

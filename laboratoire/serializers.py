@@ -19,7 +19,12 @@ class TechniqueAnalyseSerializers(serializers.ModelSerializer):
 
 
 class AnalyseRapideSerializers(serializers.ModelSerializer):
-
+    technique_analyse_id = serializers.IntegerField()
+    technique_analyse = TechniqueAnalyseSerializers(read_only=True)
+    type_analyse = TypeAnalyseSerializers(read_only=True)
+    type_analyse_id = serializers.IntegerField()
+    consultation = core_serializers.ConsultationSerializers(read_only=True)
+    consultation_id = serializers.IntegerField(allow_null=True)
     class Meta:
         model = AnalyseRapide
         fields = '__all__'
