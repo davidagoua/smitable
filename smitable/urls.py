@@ -29,4 +29,5 @@ urlpatterns = [
     path('api/v1/', include('pharmacy.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
+    path('auth/me/', views.AuthUserMeView.as_view(), name='me'),
 ]

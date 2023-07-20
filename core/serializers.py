@@ -7,7 +7,7 @@ from .models import *
 class DomicileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Domicile
-        fields = ['date_debut','date_fin',"pays", 'ville','commune','quartier']
+        fields = ['date_debut', 'date_fin', "pays", 'ville', 'commune', 'quartier']
 
 
 class PatientSerializers(serializers.ModelSerializer):
@@ -19,6 +19,7 @@ class PatientSerializers(serializers.ModelSerializer):
         for domicile in domiciles:
             Domicile.objects.create(patient=patient, **domicile)
         return patient
+
     class Meta:
         model = Patient
         exclude = []
@@ -30,13 +31,14 @@ class ConstanteSerializers(serializers.ModelSerializer):
     class Meta:
         model = Constante
         fields = ('temperature', 'poids', 'taille', 'pouls', 'tension', 'imc',
-                  'imc_status', 'temperature_status','tension_status',  'consultation_id', 'id', 'pouls_status')
+                  'imc_status', 'temperature_status', 'tension_status', 'consultation_id', 'id', 'pouls_status')
 
 
 class ServiceSerializers(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = '__all__'
+
 
 class ConsultationSerializers(serializers.ModelSerializer):
     constante_set = ConstanteSerializers(many=True, label='contantes', read_only=True, allow_null=True)
@@ -75,19 +77,24 @@ class RendezVousSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class UniteHospitalisationSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = UniteHospitalisation
         fields = '__all__'
 
 
-
 class HospitalisationSerializer(serializers.ModelSerializer):
     patient = PatientSerializers(read_only=True)
     patient_id = serializers.IntegerField()
+
     class Meta:
         model = Hospitalisation
         fields = '__all__'
 
+
+class LoginResponseSerializer(serializers.ModelSerializer):
+
+    groups = serializers.StringRelatedField(many=True)
+    class Meta:
+        model = User
+        fields = ('username', 'email','role','permissions','groups')

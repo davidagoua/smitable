@@ -1,12 +1,39 @@
+import datetime
 import random
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-User = get_user_model()
+
+class User (AbstractUser):
+    ADMIN = 0
+    MEDECIN = 10
+    INFIRMIER = 20
+    SAISIR = 30
+    HOSPITALISATION = 40
+    CONSULTATION = 50
+    LABORATOIRE = 60
+
+    ROLE_CHOICES = [
+        (ADMIN, 'Administrateur'),
+        (MEDECIN, 'Medecin'),
+        (INFIRMIER, 'Infirmier'),
+        (SAISIR, 'Saisir'),
+        (HOSPITALISATION, 'Hospitalisation'),
+        (CONSULTATION, 'Consultation'),
+        (LABORATOIRE, 'Laboratoire'),
+    ]
+
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True)
+    contact = models.CharField(max_length=100, null=True, blank=True)
+
+    @property
+    def permissions(self):
+        return self.get_all_permissions()
+
 
 
 def get_random_code() -> str:
-    return f'SMT-{random.randint(10000, 99999)}'
+    return str(datetime.date.today().year)[2:] + '-' + str(random.randint(1000, 9999))
 
 
 class TimestampedModel(models.Model):
@@ -50,6 +77,8 @@ class Patient(TimestampedModel):
     code_patient = models.CharField(max_length=100, blank=True)
     status = models.PositiveIntegerField(default=0)
     profession = models.CharField(max_length=100, null=True, blank=True)
+    nbr_enfants = models.PositiveIntegerField(default=0)
+    groupe_sanguin = models.CharField(max_length=20, null=True)
 
     def save(
             self, *args, **kwargs
@@ -170,6 +199,7 @@ class Constante(TimestampedModel):
 class RendezVous(TimestampedModel):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     date = models.DateTimeField()
+    motif = models.TextField(null=True, blank=True)
     state = models.PositiveIntegerField(default=0)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, null=True)
 
@@ -188,5 +218,7 @@ class Hospitalisation(TimestampedModel):
     unite = models.ForeignKey(UniteHospitalisation, on_delete=models.CASCADE)
 
 
-
+class Urgence(TimestampedModel):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='urgences')
+    state = models.PositiveIntegerField(default=0)
 

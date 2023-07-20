@@ -1,15 +1,27 @@
 from django.shortcuts import render
-from rest_framework import viewsets, views, generics, filters, permissions
+from rest_framework import viewsets, views, generics, filters, permissions, response
 from django_filters import rest_framework
 from django.contrib.auth import login
 from rest_framework.authentication import TokenAuthentication
+
+from pharmacy.models import Produit
 from .serializers import PatientSerializers, \
     PatientDetailSerializers, ConsultationSerializers, ConstanteSerializers, \
     ServiceSerializers, RendezVousSerializer, HospitalisationSerializer, UniteHospitalisationSerializer, \
-    DomicileSerializer
+    DomicileSerializer, LoginResponseSerializer
 from core.models import Patient, Consultation, Constante, Service, RendezVous, Hospitalisation, \
-    UniteHospitalisation, Domicile
+    UniteHospitalisation, Domicile, User
 
+
+
+
+class AuthUserMeView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, format=None):
+        serializer = LoginResponseSerializer(request.user)
+        return response.Response(serializer.data)
 
 class PatientApiListView(generics.ListCreateAPIView):
     serializer_class = PatientSerializers
@@ -61,3 +73,13 @@ class UniteHospitalisationListView(generics.ListCreateAPIView):
 class HospitalisationListView(generics.ListCreateAPIView):
     serializer_class = HospitalisationSerializer
     queryset = Hospitalisation.objects.all()
+
+
+class StatistiqueView(views.APIView):
+    def get(self, request, format=None):
+        return response.Response({
+            'patients': Patient.objects.count(),
+            'prestations': Consultation.objects.count(),
+            'personels': User.objects.count(),
+            'Produits': Produit.objects.count(),
+        })

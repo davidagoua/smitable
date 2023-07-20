@@ -1,6 +1,13 @@
 from django.contrib import admin
-from .models import Patient, Consultation, Constante, Service, Hospitalisation, UniteHospitalisation, RendezVous
+from .models import Patient, Consultation, Constante, Service, Hospitalisation, UniteHospitalisation, \
+    RendezVous, User
+from django.contrib.auth.admin import UserAdmin
 
+
+
+@admin.register(User)
+class CoreUserAdmin(UserAdmin):
+    list_display = ['username', 'role', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser']
 
 @admin.register(Patient)
 class PatientAdmin(admin.ModelAdmin):

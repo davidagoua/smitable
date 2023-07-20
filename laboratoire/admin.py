@@ -21,4 +21,4 @@ class ProtocolAnalyseAdmin(admin.ModelAdmin):
 
 @admin.register(AnalysePatient)
 class AnalysePatientAdmin(admin.ModelAdmin):
-    list_display = ['patient','analyse','resultat','state']
+    list_display = ['patient','analyse','resultat','state','code_barre']
