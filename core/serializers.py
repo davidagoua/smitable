@@ -37,7 +37,7 @@ class ConstanteSerializers(serializers.ModelSerializer):
 class ServiceSerializers(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = '__all__'
+        fields = ['id','nom','consultation_count','user','icon','description']
 
 
 class ConsultationSerializers(serializers.ModelSerializer):

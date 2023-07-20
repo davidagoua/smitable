@@ -43,6 +43,11 @@ class ConsultationApiListView(generics.ListCreateAPIView):
     queryset = Consultation.objects.all()
 
 
+class ConsultationApiCreateView(generics.RetrieveUpdateAPIView):
+    serializer_class = ConsultationSerializers
+    queryset = Consultation.objects.all()
+
+
 class ConstanteApiListView(generics.ListCreateAPIView):
     serializer_class = ConstanteSerializers
     queryset = Constante.objects.all()

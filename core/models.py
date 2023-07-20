@@ -56,6 +56,10 @@ class Service(models.Model):
     def __str__(self):
         return self.nom
 
+    @property
+    def consultation_count(self):
+        return self.consultation_set.count()
+
 
 class Patient(TimestampedModel):
     situation_matrimoniales_choices = [
