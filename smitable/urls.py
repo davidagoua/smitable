@@ -23,11 +23,11 @@ router = DefaultRouter()
 
 
 urlpatterns = [
-    path('/back/admin/', admin.site.urls),
-    path('/back/api/v1/', include('core.urls')),
-    path('/back/api/v1/', include('laboratoire.urls')),
-    path('/back/api/v1/', include('pharmacy.urls')),
-    path('/back/auth/', include('djoser.urls')),
-    path('/back/auth/', include('djoser.urls.authtoken')),
-    path('/back/auth/me/', views.AuthUserMeView.as_view(), name='me'),
+    path('admin/', admin.site.urls),
+    path('api/v1/', include('core.urls')),
+    path('api/v1/', include('laboratoire.urls')),
+    path('api/v1/', include('pharmacy.urls')),
+    path('api/v1/auth/', include('djoser.urls')),
+    path('api/v1/auth/', include('djoser.urls.authtoken')),
+    path('api/v1/auth/me/', views.AuthUserMeView.as_view(), name='me'),
 ]
