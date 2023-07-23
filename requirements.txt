@@ -9,3 +9,4 @@ psycopg2
 django-excel
 pymongo
 pyexcel-xlsx
+pillow
