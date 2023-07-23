@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Patient, Consultation, Constante, Service, Hospitalisation, UniteHospitalisation, \
     RendezVous, User
+from core import models
 from django.contrib.auth.admin import UserAdmin
 
 
@@ -12,7 +13,7 @@ class CoreUserAdmin(UserAdmin):
 @admin.register(Patient)
 class PatientAdmin(admin.ModelAdmin):
     list_display = [
-        'created_at','code_patient','status',
+        'id','created_at','code_patient','status',
         'nom','prenoms','date_naissance','lieu_naissance'
     ]
 
@@ -44,9 +45,15 @@ class ServiceAdmin(admin.ModelAdmin):
 
 
 @admin.register(UniteHospitalisation)
+@admin.register(models.ChambreHospitalisation)
 class UniteHospitalisationAdmin(admin.ModelAdmin):
     list_display = ['nom']
 
+
+
+@admin.register(models.BoxHospitalisation)
+class BoxHospitalisationAdmin(admin.ModelAdmin):
+    list_display = ['nom','capacite','occuper']
 
 @admin.register(Hospitalisation)
 class HospitalisationAdmin(admin.ModelAdmin):
@@ -56,3 +63,5 @@ class HospitalisationAdmin(admin.ModelAdmin):
 @admin.register(RendezVous)
 class RendezvousAdmin(admin.ModelAdmin):
     list_display = ['patient', 'service', 'date']
+
+

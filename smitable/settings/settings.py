@@ -158,3 +158,13 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'core.User'
+
+MONGO_HOST = '147.135.165.171'
+MONGO_PORT = 27017
+MONGO_DB = 'huge'
+MONGO_USER = 'root'
+MONGO_PASSWORD = 'example'
+
+FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
+                        "django_excel.TemporaryExcelFileUploadHandler")
+

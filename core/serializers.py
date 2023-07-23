@@ -30,7 +30,7 @@ class ConstanteSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Constante
-        fields = ('temperature', 'poids', 'taille', 'pouls', 'tension', 'imc',
+        fields = ('temperature', 'poids', 'taille', 'pouls', 'tension', 'imc','pression_arterielle','frequence_respiratoire',
                   'imc_status', 'temperature_status', 'tension_status', 'consultation_id', 'id', 'pouls_status')
 
 
@@ -77,10 +77,26 @@ class RendezVousSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
+class BoxHospitalisationSerializer(serializers.ModelSerializer):
+    chambre = serializers.StringRelatedField()
+    class Meta:
+        model = BoxHospitalisation
+        fields = '__all__'
+
+
+class ChambreHospitalisation(serializers.ModelSerializer):
+    boxes = BoxHospitalisationSerializer(many=True)
+    class Meta:
+        model = ChambreHospitalisation
+        fields = '__all__'
+
 class UniteHospitalisationSerializer(serializers.ModelSerializer):
+    chambres = ChambreHospitalisation(many=True)
+
     class Meta:
         model = UniteHospitalisation
-        fields = '__all__'
+        fields = ['chambres','nom','id']
 
 
 class HospitalisationSerializer(serializers.ModelSerializer):

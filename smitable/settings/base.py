@@ -1,17 +1,19 @@
 from .settings import *
 
+# mongodb://root:example@147.135.165.171:27017/?tls=false
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR.parent / 'db.sqlite3',
     },
-    'mongo': {
+    'mongodb': {
         'ENGINE': 'djongo',
-        'NAME': 'smitable',
+        'NAME': 'huge',
         'CLIENT': {
-            'host': 'localhost',
+            'host': '147.135.165.171',
             'port': 27017,
-            'username': 'smitable',
+            'username': 'root',
+            'password': 'example',
         }
     }
 }

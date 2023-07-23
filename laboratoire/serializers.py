@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 import core.models
-from .models import TypeAnalyse, TechniqueAnalyse, AnalyseRapide, ProtocolAnalyse, Analyse, AnalysePatient
+from .models import TypeAnalyse, TechniqueAnalyse, AnalyseRapide, ProtocolAnalyse, Analyse, AnalysePatient, Laboratoire
 from core import serializers as core_serializers
 
 class TypeAnalyseSerializers(serializers.ModelSerializer):
@@ -65,3 +65,9 @@ class AnalysePatientSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = AnalysePatient
+
+
+class LaboratoireSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Laboratoire
+        fields='__all__'

@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics, views, response
 from .serializers import TypeAnalyseSerializers, TechniqueAnalyseSerializers, AnalyseRapideSerializers, \
-    ProtocolAnalyseSerializer, AnalyseSerializer, AnalysePatientSerializer
-from .models import TypeAnalyse, TechniqueAnalyse, AnalyseRapide, ProtocolAnalyse, Analyse, AnalysePatient
+    ProtocolAnalyseSerializer, AnalyseSerializer, AnalysePatientSerializer, LaboratoireSerializer
+from .models import TypeAnalyse, TechniqueAnalyse, AnalyseRapide, ProtocolAnalyse, Analyse, AnalysePatient, Laboratoire
 
 
 class TypeAnalyseListView(generics.ListAPIView):
@@ -34,6 +34,17 @@ class AnalysePatientListView(generics.ListCreateAPIView):
     serializer_class = AnalysePatientSerializer
     queryset = AnalysePatient.objects.prefetch_related('patient')
 
+    def get_queryset(self):
+        state = self.request.GET.get('state', 0)
+        return self.queryset.filter(state=state)
+
+
+class AnalysePatientUpdateView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AnalysePatientSerializer
+    queryset = AnalysePatient.objects.all()
+
+
+
 
 class AnalysePatientApiView(views.APIView):
 
@@ -53,3 +64,8 @@ class AnalysePatientApiView(views.APIView):
         )
 
         return response.Response('ok')
+
+
+class LaboratoireListView(generics.ListCreateAPIView):
+    serializer_class = LaboratoireSerializer
+    queryset = Laboratoire.objects.all()

@@ -16,3 +16,18 @@ class TypeProduitAdmin(admin.ModelAdmin):
 @admin.register(models.Ordonance)
 class Ordonance(admin.ModelAdmin):
     list_display = ['consultation']
+
+
+@admin.register(models.Protocol)
+class ProtocolAdmin(admin.ModelAdmin):
+    list_display = ['nom','duree_month']
+
+
+@admin.register(models.Molecule)
+class MoleculeAdmin(admin.ModelAdmin):
+    list_display = ['pk','nom']
+
+
+@admin.register(models.CategorieMolecule)
+class CategorieMoleculeAdmin(admin.ModelAdmin):
+    list_display = ['nom']

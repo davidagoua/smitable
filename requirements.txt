@@ -6,4 +6,6 @@ django-cors-headers
 djangorestframework_simplejwt
 gunicorn
 psycopg2
-djongo
+django-excel
+pymongo
+pyexcel-xlsx

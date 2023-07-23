@@ -2,6 +2,7 @@ import datetime
 import random
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.dispatch import receiver
 
 
 class User (AbstractUser):
@@ -64,6 +65,7 @@ class Service(models.Model):
 class Patient(TimestampedModel):
     situation_matrimoniales_choices = [
         ('Celibataire', 'Celibataire'),
+        ('Concubinage', 'Concubinage'),
         ('Marie', 'Marié'),
         ('Divorce', 'Divorcé'),
         ('Veuf', 'Veuf'),
@@ -83,15 +85,21 @@ class Patient(TimestampedModel):
     profession = models.CharField(max_length=100, null=True, blank=True)
     nbr_enfants = models.PositiveIntegerField(default=0)
     groupe_sanguin = models.CharField(max_length=20, null=True)
+    niveau_etude = models.CharField(max_length=100, null=True, blank=True)
+    employeur = models.CharField(max_length=100, null=True, blank=True)
 
     def save(
             self, *args, **kwargs
     ):
-        self.code_patient = get_random_code()
+        if self.code_patient == '':
+            self.code_patient = get_random_code()
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.prenoms} {self.nom}'
+
+    class Meta:
+        ordering = ['-created_at']
 
 
 class Domicile(models.Model):
@@ -108,6 +116,20 @@ class Domicile(models.Model):
         return self.date_fin is None
 
 
+class CategorieMaladies(models.Model):
+    nom = models.CharField(max_length=225)
+
+
+class Maladie(models.Model):
+    nom= models.CharField(max_length=225)
+    slug = models.CharField(max_length=225, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    code = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return self.nom
+
+
 class Consultation(TimestampedModel):
     patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, null=True)
     mode_entree = models.CharField(max_length=100,
@@ -120,6 +142,12 @@ class Consultation(TimestampedModel):
     status = models.PositiveIntegerField(default=0)
     motifs = models.JSONField(null=True, blank=True)
     antecedents = models.JSONField(null=True, blank=True)
+    charge_viral = models.JSONField(null=True, blank=True)
+    bilan_biologique = models.JSONField(null=True, blank=True)
+
+
+    class Meta:
+        ordering = ['-created_at']
 
 
 class MotifConsultation(models.Model):
@@ -141,6 +169,9 @@ class Constante(TimestampedModel):
     taille = models.FloatField(default=0)
     pouls = models.FloatField(default=0)
     tension = models.FloatField(default=0)
+    pression_arterielle = models.FloatField(default=0)
+    frequence_respiratoire = models.FloatField(default=0)
+    saturation_oxygene = models.FloatField(default=0)
 
     def __str__(self):
         return f'{self.consultation.patient} {self.temperature}'
@@ -216,13 +247,43 @@ class UniteHospitalisation(models.Model):
     def __str__(self): return self.nom
 
 
+class ChambreHospitalisation(models.Model):
+    unite = models.ForeignKey(UniteHospitalisation, on_delete=models.CASCADE, related_name='chambres')
+    nom = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nom
+
+
+class BoxHospitalisation(models.Model):
+    chambre = models.ForeignKey(ChambreHospitalisation, on_delete=models.CASCADE, related_name='boxes')
+    capacite = models.PositiveIntegerField(default=1)
+    nom = models.CharField(max_length=100)
+    occuper = models.BooleanField(default=False)
+
+
 class Hospitalisation(TimestampedModel):
     state = models.PositiveIntegerField(default=0)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    unite = models.ForeignKey(UniteHospitalisation, on_delete=models.CASCADE)
+    unite = models.ForeignKey(BoxHospitalisation, on_delete=models.CASCADE)
 
 
 class Urgence(TimestampedModel):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='urgences')
     state = models.PositiveIntegerField(default=0)
 
+
+class Status(TimestampedModel):
+    nom = models.CharField(max_length=100)
+    code = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self): return self.nom
+
+
+@receiver(models.signals.post_save, sender=Hospitalisation)
+def on_hospitalisation_save(sender, instance, created, **kwargs):
+    if instance.unite is not None:
+        box = instance.unite
+        box.occuper = True
+        box.save()

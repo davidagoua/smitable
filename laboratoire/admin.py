@@ -1,9 +1,10 @@
 from django.contrib import admin
-from .models import TypeAnalyse, TechniqueAnalyse, AnalyseRapide, ProtocolAnalyse, Analyse, AnalysePatient
+from .models import TypeAnalyse, TechniqueAnalyse, AnalyseRapide, ProtocolAnalyse, Analyse, AnalysePatient, Laboratoire
 
 
 @admin.register(TypeAnalyse)
 @admin.register(Analyse)
+@admin.register(Laboratoire)
 @admin.register(TechniqueAnalyse)
 class TypeAnalyseAdmin(admin.ModelAdmin):
     list_display = ['nom']
