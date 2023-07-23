@@ -4,7 +4,7 @@ from .settings import *
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR.parent / 'db.sqlite3',
+        'NAME': BASE_DIR.parent / env('DB_NAME'),
     },
     'mongodb': {
         'ENGINE': 'djongo',

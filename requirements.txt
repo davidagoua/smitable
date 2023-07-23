@@ -11,3 +11,4 @@ pymongo
 pyexcel-xlsx
 pillow
 djongo
+django-environ
