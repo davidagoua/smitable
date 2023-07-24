@@ -12,6 +12,7 @@ class DomicileSerializer(serializers.ModelSerializer):
 
 class PatientSerializers(serializers.ModelSerializer):
     domiciles = DomicileSerializer(many=True)
+    user = serializers.StringRelatedField()
 
     def create(self, validated_data: dict):
         domiciles = validated_data.pop('domiciles')

@@ -20,7 +20,9 @@ urlpatterns = [
     path('services/<int:service_id>/consultations/', ServiceConsultationListView.as_view()),
     path('statistiques/', StatistiqueView.as_view()),
     path('consultations/<int:pk>/', ConsultationApiCreateView.as_view(),),
-    path('bilan-initial/<int:pk>', BilanInitialView.as_view(),),
+    path('bilan-initial/<int:pk>/', BilanInitialView.as_view(),),
     path('bilan-initial/', BilanInitialListView.as_view(),),
     path('upload-patient/', UploadPatient.as_view(),),
+    path('dossier-data/<str:collection>/', views.DossierDataAPIView.as_view()),
+    path('dossier-data/<str:collection>/<int:pk>/', views.DossierDataAPIView.as_view()),
 ]

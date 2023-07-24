@@ -27,6 +27,9 @@ class User (AbstractUser):
     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True)
     contact = models.CharField(max_length=100, null=True, blank=True)
 
+    def __str__(self):
+        return self.get_full_name()
+
     @property
     def permissions(self):
         return self.get_all_permissions()

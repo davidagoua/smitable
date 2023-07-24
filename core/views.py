@@ -129,6 +129,7 @@ class StatistiqueView(views.APIView):
         })
 
 
+
 class BilanInitialListView(views.APIView):
     def post(self, request, format=None):
         db = get_mongodb_client()
@@ -142,6 +143,27 @@ class BilanInitialListView(views.APIView):
         #get patient id in path param
 
         return response.Response(db['bilan_initial'].find({'patient_id': pk}))
+
+
+class DossierDataAPIView(views.APIView):
+
+    def get(self, request, pk, collection):
+        db = get_mongodb_client()
+        data = db[collection].find_one({'patient_id': pk})
+
+        #todo: make object_id json serializable
+        return response.Response(data)
+
+    def post(self, request, collection):
+        db = get_mongodb_client()
+        data = request.data
+        data['user_id'] = self.request.user.pk
+        db[collection].insert_one(data)
+
+    def update(self, request, collection, pk):
+        db = get_mongodb_client()
+        data = request.data
+        db[collection].update_one({'patient_id': pk}, data)
 
 
 class BilanInitialView(views.APIView):
