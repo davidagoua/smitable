@@ -203,8 +203,8 @@ class UploadPatient(views.APIView):
     def post(self, request):
 
         file: ExcelMemoryFileUploadHandler = request.FILES['fichier']
-        print('start upload excel documents')
-        upload_excel_documents(file)
+
+        Thread(target=upload_excel_documents, args=(file.file,)).start()
 
         return response.Response({
                 "file": "ok"
