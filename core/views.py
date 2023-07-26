@@ -204,31 +204,7 @@ class UploadPatient(views.APIView):
 
         file: ExcelMemoryFileUploadHandler = request.FILES['fichier']
         print('start upload excel documents')
-        sheet = openpyxl.load_workbook(file).active
-        get_rows = get_rows_as_dict(sheet)
-        print(get_rows[0])
-
-        for p in get_rows:
-            try:
-                patient = Patient.objects.create(
-                    code_patient=p['IDENT'],
-                    nom=p['NOM'] if p['NOM'] is not None else "",
-                    prenoms=p['PRENOM'] if p['PRENOM'] is not None else "",
-                    genre=p['SEXE'] if p['SEXE'] is not None else "",
-                    date_naissance=p['DATENAIS'] if p['DATENAIS'] is not None else "",
-                    lieu_naissance=p['VILLE'] if p['VILLE'] is not None else "",
-                    situation_matrimoniale=p['SITMAT'] if p['SITMAT'] is not None else "",
-                    niveau_etude=p['NIVETU'],
-                    nationalite=p['NATIONAL'] if p['NATIONAL'] is not None else "",
-                    contact=p['TELEPHONE'] if p['TELEPHONE'] is not None else ""
-                )
-                patient.domiciles.create(ville=p['VILLE'],
-                                         commune=p['COMMUNE'])
-            except Exception as e:
-                print(e)
-
-            finally:
-                pass
+        upload_excel_documents(file)
 
         return response.Response({
                 "file": "ok"
