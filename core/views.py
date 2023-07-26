@@ -2,34 +2,19 @@ import datetime
 import functools
 
 import openpyxl
-import pymongo
 from django.db import transaction
-from django.shortcuts import render
 from django_excel import ExcelMemoryFileUploadHandler
 from rest_framework import viewsets, views, generics, filters, permissions, response, mixins, decorators
-from django_filters import rest_framework
-from django.contrib.auth import login
+from threading import Thread
+
 from rest_framework.authentication import TokenAuthentication
 
 from pharmacy.models import Produit
-from smitable.settings import settings
-from .serializers import PatientSerializers, \
-    PatientDetailSerializers, ConsultationSerializers, ConstanteSerializers, \
-    ServiceSerializers, RendezVousSerializer, HospitalisationSerializer, UniteHospitalisationSerializer, \
-    DomicileSerializer, LoginResponseSerializer, BoxHospitalisationSerializer
+from utils import get_mongodb_client, get_pusher
+from core import serializers
+
 from core.models import Patient, Consultation, Constante, Service, RendezVous, Hospitalisation, \
     UniteHospitalisation, Domicile, User, BoxHospitalisation
-
-
-@functools.lru_cache(maxsize=None)
-def get_mongodb_client():
-    client = pymongo.MongoClient(
-        settings.MONGO_HOST,
-        settings.MONGO_PORT,
-        username=settings.MONGO_USER,
-        password=settings.MONGO_PASSWORD,
-    )
-    return client[settings.MONGO_DB]
 
 
 class AuthUserMeView(views.APIView):
@@ -37,11 +22,12 @@ class AuthUserMeView(views.APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        serializer = LoginResponseSerializer(request.user)
+        serializer = serializers.LoginResponseSerializer(request.user)
         return response.Response(serializer.data)
 
+
 class PatientApiListView(generics.ListCreateAPIView):
-    serializer_class = PatientSerializers
+    serializer_class = serializers.PatientSerializers
     queryset = Patient.objects.all()
     authentication_classes = [TokenAuthentication]
     # permission_classes = (permissions.IsAuthenticated,)
@@ -63,59 +49,59 @@ class PatientApiListView(generics.ListCreateAPIView):
 
 
 class PatientApiDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = PatientDetailSerializers
+    serializer_class = serializers.PatientDetailSerializers
     queryset = Patient.objects.all()
 
 
 class ConsultationApiListView(generics.ListCreateAPIView):
-    serializer_class = ConsultationSerializers
+    serializer_class = serializers.ConsultationSerializers
     queryset = Consultation.objects.all()
 
 
 class UrgenceApiListView(generics.ListCreateAPIView):
-    serializer_class = ConsultationSerializers
+    serializer_class = serializers.ConsultationSerializers
     queryset = Consultation.objects.filter(mode_entree='Urgence')
 
 
 class ConsultationApiCreateView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ConsultationSerializers
+    serializer_class = serializers.ConsultationSerializers
     queryset = Consultation.objects.all()
 
 
 class ConstanteApiListView(generics.ListCreateAPIView):
-    serializer_class = ConstanteSerializers
+    serializer_class = serializers.ConstanteSerializers
     queryset = Constante.objects.all()
 
 
 class ServiceListView(generics.ListAPIView):
-    serializer_class = ServiceSerializers
+    serializer_class = serializers.ServiceSerializers
     queryset = Service.objects.all()
 
 
 class ServiceConsultationListView(generics.ListAPIView):
-    serializer_class = ConsultationSerializers
+    serializer_class = serializers.ConsultationSerializers
 
     def get_queryset(self):
         return Consultation.objects.filter(service_id=self.kwargs['service_id'])
 
 
 class RendezVousListView(generics.ListCreateAPIView):
-    serializer_class = RendezVousSerializer
+    serializer_class = serializers.RendezVousSerializer
     queryset = RendezVous.objects.filter(state=0)
 
 
 class UniteHospitalisationListView(generics.ListCreateAPIView):
-    serializer_class = UniteHospitalisationSerializer
+    serializer_class = serializers.UniteHospitalisationSerializer
     queryset = UniteHospitalisation.objects.all()
 
 
 class HospitalisationListView(generics.ListCreateAPIView):
-    serializer_class = HospitalisationSerializer
+    serializer_class = serializers.HospitalisationSerializer
     queryset = Hospitalisation.objects.all()
 
 
 class HospitalisationUpdateView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = HospitalisationSerializer
+    serializer_class = serializers.HospitalisationSerializer
     queryset = Hospitalisation.objects.all()
 
 
@@ -129,7 +115,6 @@ class StatistiqueView(views.APIView):
         })
 
 
-
 class BilanInitialListView(views.APIView):
     def post(self, request, format=None):
         db = get_mongodb_client()
@@ -140,7 +125,7 @@ class BilanInitialListView(views.APIView):
 
     def get(self, request, pk, format=None):
         db = get_mongodb_client()
-        #get patient id in path param
+        # get patient id in path param
 
         return response.Response(db['bilan_initial'].find({'patient_id': pk}))
 
@@ -151,7 +136,7 @@ class DossierDataAPIView(views.APIView):
         db = get_mongodb_client()
         data = db[collection].find_one({'patient_id': pk})
 
-        #todo: make object_id json serializable
+        # todo: make object_id json serializable
         return response.Response(data)
 
     def post(self, request, collection):
@@ -182,12 +167,43 @@ def get_rows_as_dict(worksheet):
 
     return rows_as_dict
 
+
+def upload_excel_documents(file):
+    print('start upload excel documents')
+    sheet = openpyxl.load_workbook(file).active
+    get_rows = get_rows_as_dict(sheet)
+    print(get_rows[0])
+
+    for p in get_rows:
+        db = get_mongodb_client()
+        try:
+            patient = Patient.objects.create(
+                code_patient=p['IDENT'],
+                nom=p['NOM'] if p['NOM'] is not None else "",
+                prenoms=p['PRENOM'] if p['PRENOM'] is not None else "",
+                genre=p['SEXE'] if p['SEXE'] is not None else "",
+                date_naissance=p['DATENAIS'] if p['DATENAIS'] is not None else "",
+                lieu_naissance=p['VILLE'] if p['VILLE'] is not None else "",
+                situation_matrimoniale=p['SITMAT'] if p['SITMAT'] is not None else "",
+                niveau_etude=p['NIVETU'],
+                nationalite=p['NATIONAL'] if p['NATIONAL'] is not None else "",
+                contact=p['TELEPHONE'] if p['TELEPHONE'] is not None else ""
+            )
+            patient.domiciles.create(ville=p['VILLE'],
+                                     commune=p['COMMUNE'])
+        except:
+            pass
+        finally:
+            db['patient_suivi'].insert_one(p)
+    print('ending upload excel documents')
+
+
 class UploadPatient(views.APIView):
 
-    @transaction.non_atomic_requests
     def post(self, request):
-        db = get_mongodb_client()
+
         file: ExcelMemoryFileUploadHandler = request.FILES['fichier']
+        print('start upload excel documents')
         sheet = openpyxl.load_workbook(file).active
         get_rows = get_rows_as_dict(sheet)
         print(get_rows[0])
@@ -195,28 +211,28 @@ class UploadPatient(views.APIView):
         for p in get_rows:
             try:
                 patient = Patient.objects.create(
-                    code_patient= p['IDENT'],
-                    nom= p['NOM'] if p['NOM'] is not None else "",
-                    prenoms= p['PRENOM'] if p['PRENOM'] is not None else "",
-                    genre= p['SEXE'] if p['SEXE'] is not None else "",
-                    date_naissance= p['DATENAIS'] if p['DATENAIS'] is not None else "",
-                    lieu_naissance= p['VILLE'] if p['VILLE'] is not None else "",
+                    code_patient=p['IDENT'],
+                    nom=p['NOM'] if p['NOM'] is not None else "",
+                    prenoms=p['PRENOM'] if p['PRENOM'] is not None else "",
+                    genre=p['SEXE'] if p['SEXE'] is not None else "",
+                    date_naissance=p['DATENAIS'] if p['DATENAIS'] is not None else "",
+                    lieu_naissance=p['VILLE'] if p['VILLE'] is not None else "",
                     situation_matrimoniale=p['SITMAT'] if p['SITMAT'] is not None else "",
                     niveau_etude=p['NIVETU'],
                     nationalite=p['NATIONAL'] if p['NATIONAL'] is not None else "",
                     contact=p['TELEPHONE'] if p['TELEPHONE'] is not None else ""
                 )
                 patient.domiciles.create(ville=p['VILLE'],
-                            commune=p['COMMUNE'])
-            except:
-                pass
-            finally:
-                db['patient_suivi'].insert_one(p)
+                                         commune=p['COMMUNE'])
+            except Exception as e:
+                print(e)
 
+            finally:
+                pass
 
         return response.Response({
-            "file": "ok"
-        })
+                "file": "ok"
+            })
 
 
 @decorators.api_view()
@@ -224,6 +240,13 @@ def get_boxes(request):
     boxes = BoxHospitalisation.objects.filter(occuper=False)
 
     return response.Response(
-        BoxHospitalisationSerializer(boxes, many=True).data
+        serializers.BoxHospitalisationSerializer(boxes, many=True).data
     )
 
+
+@decorators.api_view()
+def suivre_patient(request, pk):
+    patient = Patient.objects.get(pk=pk)
+    patient.status = 1
+    patient.save()
+    return response.Response({'ok': True})

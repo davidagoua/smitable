@@ -15,6 +15,7 @@ urlpatterns = [
     path('rdv/', RendezVousListView.as_view()),
     path('unites/', UniteHospitalisationListView.as_view()),
     path('boxes/', views.get_boxes),
+    path('suivre/<int:pk>/', views.suivre_patient),
     path('hospitalisations/', HospitalisationListView.as_view()),
     path('hospitalisations/<int:pk>/', views.HospitalisationUpdateView.as_view()),
     path('services/<int:service_id>/consultations/', ServiceConsultationListView.as_view()),

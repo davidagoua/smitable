@@ -12,3 +12,4 @@ pyexcel-xlsx
 pillow
 djongo
 django-environ
+pusher

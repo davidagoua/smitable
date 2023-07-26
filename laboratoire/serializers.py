@@ -62,6 +62,8 @@ class AnalysePatientSerializer(serializers.ModelSerializer):
     patient = core_serializers.PatientSerializers(read_only=True)
     service_id = serializers.IntegerField()
     service = core_serializers.ServiceSerializers(read_only=True)
+    user = core_serializers.UserSerializer(read_only=True)
+    user_id = serializers.IntegerField(allow_null=True)
     class Meta:
         fields = '__all__'
         model = AnalysePatient

@@ -8,7 +8,7 @@ from django.contrib.auth.admin import UserAdmin
 
 @admin.register(User)
 class CoreUserAdmin(UserAdmin):
-    list_display = ['username', 'role', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser']
+    list_display = ['pk','username', 'role', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser']
 
 @admin.register(Patient)
 class PatientAdmin(admin.ModelAdmin):
@@ -45,15 +45,19 @@ class ServiceAdmin(admin.ModelAdmin):
 
 
 @admin.register(UniteHospitalisation)
-@admin.register(models.ChambreHospitalisation)
 class UniteHospitalisationAdmin(admin.ModelAdmin):
     list_display = ['nom']
 
 
-
-@admin.register(models.BoxHospitalisation)
-class BoxHospitalisationAdmin(admin.ModelAdmin):
+class BoxHospitalisationAdmin(admin.TabularInline):
     list_display = ['nom','capacite','occuper']
+    model = models.BoxHospitalisation
+
+
+@admin.register(models.ChambreHospitalisation)
+class ChambreHospitalisation(admin.ModelAdmin):
+    list_display = ['nom']
+    inlines = [BoxHospitalisationAdmin]
 
 @admin.register(Hospitalisation)
 class HospitalisationAdmin(admin.ModelAdmin):
