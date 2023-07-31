@@ -4,6 +4,7 @@ from rest_framework import viewsets, generics
 from personel import serializers
 
 
+
 class GardeUniteViewSet(generics.ListCreateAPIView):
     queryset = models.GardeUnite.objects.all()
     serializer_class = serializers.GardUnite
