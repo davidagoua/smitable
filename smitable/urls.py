@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/v1/', include('core.urls')),
     path('api/v1/', include('laboratoire.urls')),
     path('api/v1/', include('pharmacy.urls')),
+    path('api/v1/', include('personel.urls')),
     path('api/v1/auth/', include('djoser.urls')),
     path('api/v1/auth/', include('djoser.urls.authtoken')),
     path('api/v1/auth/me/', views.AuthUserMeView.as_view(), name='me'),

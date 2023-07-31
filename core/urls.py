@@ -26,4 +26,7 @@ urlpatterns = [
     path('upload-patient/', UploadPatient.as_view(),),
     path('dossier-data/<str:collection>/', views.DossierDataAPIView.as_view()),
     path('dossier-data/<str:collection>/<int:pk>/', views.DossierDataAPIView.as_view()),
+    path('users/', views.UserListView.as_view()),
+    path('groups/', views.GroupListView.as_view()),
+    path('permissions/', views.PermissionListView.as_view()),
 ]

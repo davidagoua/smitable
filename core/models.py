@@ -263,6 +263,7 @@ class BoxHospitalisation(models.Model):
     capacite = models.PositiveIntegerField(default=1)
     nom = models.CharField(max_length=100)
     occuper = models.BooleanField(default=False)
+    occupant = models.ForeignKey(Patient, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class Hospitalisation(TimestampedModel):
@@ -289,4 +290,5 @@ def on_hospitalisation_save(sender, instance, created, **kwargs):
     if instance.unite is not None:
         box = instance.unite
         box.occuper = True
+        box.occupant = instance.patient
         box.save()

@@ -21,13 +21,14 @@ def get_mongodb_client():
 def get_pusher():
     client = Pusher(
         '78473876483763764',
-        key='some-key',
+        key='app-key',
         secret='some-secret',
         host="154.56.60.195",
         port=6001,
         ssl=False,
     )
     return client
+
 
 if __name__ == '__main__':
     p = get_pusher()

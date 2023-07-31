@@ -2,10 +2,12 @@ import json
 
 from rest_framework import serializers
 from .models import *
+from django.contrib.auth import models as auth_models
 
 
 
 class UserSerializer(serializers.ModelSerializer):
+    groups = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = User
@@ -88,6 +90,7 @@ class RendezVousSerializer(serializers.ModelSerializer):
 
 class BoxHospitalisationSerializer(serializers.ModelSerializer):
     chambre = serializers.StringRelatedField()
+    occupant = PatientSerializers(read_only=True)
     class Meta:
         model = BoxHospitalisation
         fields = '__all__'
@@ -122,3 +125,15 @@ class LoginResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email','role','permissions','groups')
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = auth_models.Group
+        fields = '__all__'
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = auth_models.Permission
+        fields = '__all__'

@@ -2,6 +2,7 @@ import datetime
 import functools
 
 import openpyxl
+from django.contrib.auth.models import Group, Permission
 from django.db import transaction
 from django_excel import ExcelMemoryFileUploadHandler
 from rest_framework import viewsets, views, generics, filters, permissions, response, mixins, decorators
@@ -203,9 +204,8 @@ class UploadPatient(views.APIView):
     def post(self, request):
 
         file: ExcelMemoryFileUploadHandler = request.FILES['fichier']
-
-        Thread(target=upload_excel_documents, args=(file.file,)).start()
-
+        print('start upload excel documents')
+        Thread(target=upload_excel_documents, args=(file,)).start()
         return response.Response({
                 "file": "ok"
             })
@@ -226,3 +226,18 @@ def suivre_patient(request, pk):
     patient.status = 1
     patient.save()
     return response.Response({'ok': True})
+
+
+class UserListView(generics.ListCreateAPIView):
+    serializer_class = serializers.UserSerializer
+    queryset = User.objects.exclude(is_superuser=True)
+
+
+class GroupListView(generics.ListCreateAPIView):
+    serializer_class = serializers.GroupSerializer
+    queryset = Group.objects.all()
+
+
+class PermissionListView(generics.ListCreateAPIView):
+    serializer_class = serializers.PermissionSerializer
+    queryset = Permission.objects.all()
