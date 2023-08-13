@@ -233,6 +233,13 @@ class UserListView(generics.ListCreateAPIView):
     queryset = User.objects.exclude(is_superuser=True)
 
 
+
+
+class UserRetrieveView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.UserSerializer
+    queryset = User.objects.exclude(is_superuser=True)
+
+
 class GroupListView(generics.ListCreateAPIView):
     serializer_class = serializers.GroupSerializer
     queryset = Group.objects.all()

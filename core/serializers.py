@@ -1,17 +1,29 @@
 import json
 
+from django.contrib.auth.models import Group
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth import models as auth_models
 
 
-
 class UserSerializer(serializers.ModelSerializer):
     groups = serializers.StringRelatedField(many=True, read_only=True)
-
+    groups_all = serializers.ListField(write_only=True)
+    
+    def create(self, validated_data):
+        groups_all = validated_data.pop('groups_all')
+        print(groups_all)
+        user = User(
+            **validated_data,
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        user.groups.add(*[Group.objects.get(pk=group['id']) for group in groups_all ])
+        return user
     class Meta:
         model = User
-        exclude = ['password']
+        fields = '__all__'
+
 
 class DomicileSerializer(serializers.ModelSerializer):
     class Meta:

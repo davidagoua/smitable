@@ -33,5 +33,6 @@ urlpatterns = [
     path('api/v1/auth/', include('djoser.urls')),
     path('api/v1/auth/', include('djoser.urls.authtoken')),
     path('api/v1/auth/me/', views.AuthUserMeView.as_view(), name='me'),
+    path('', include('django_prometheus.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

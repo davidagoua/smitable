@@ -3,7 +3,7 @@ from .settings import *
 # mongodb://root:example@147.135.165.171:27017/?tls=false
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django_prometheus.db.backends.sqlite3',
         'NAME': BASE_DIR.parent / env('DB_NAME'),
     },
     'mongodb': {

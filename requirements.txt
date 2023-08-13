@@ -13,3 +13,4 @@ pillow
 djongo
 django-environ
 pusher
+django-prometheus
