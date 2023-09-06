@@ -33,3 +33,4 @@ def get_pusher():
 if __name__ == '__main__':
     p = get_pusher()
     p.trigger('channel_1','notification', {'user_id':1,'message':'user was here'})
+    p.trigger('ch','n', {'user_id':1,'message':'user was here'})
