@@ -20,17 +20,14 @@ def get_mongodb_client():
 @functools.lru_cache()
 def get_pusher():
     client = Pusher(
-        '78473876483763764',
-        key='app-key',
-        secret='some-secret',
-        host="154.56.60.195",
-        port=6001,
-        ssl=False,
+        '1184761',
+        key='abcac9dd524eef266863',
+        secret='f373f63b0c90067512f6',
+        cluster='eu',
     )
     return client
 
 
 if __name__ == '__main__':
     p = get_pusher()
-    p.trigger('channel_1','notification', {'user_id':1,'message':'user was here'})
-    p.trigger('ch','n', {'user_id':1,'message':'user was here'})
+    p.trigger('channel_1','notification', {'user_id':1,'message':'Salut utilisateurs'})

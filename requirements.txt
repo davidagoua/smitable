@@ -14,3 +14,4 @@ djongo
 django-environ
 pusher
 django-prometheus
+pandas

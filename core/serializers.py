@@ -2,13 +2,29 @@ import json
 
 from django.contrib.auth.models import Group
 from rest_framework import serializers
+from django.contrib.auth.models import Group, Permission
 from .models import *
 from django.contrib.auth import models as auth_models
 
 
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = auth_models.Group
+        fields = '__all__'
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = auth_models.Permission
+        fields = '__all__'
+
+
 class UserSerializer(serializers.ModelSerializer):
-    groups = serializers.StringRelatedField(many=True, read_only=True)
+    #groups = serializers.StringRelatedField(many=True, read_only=True)
     groups_all = serializers.ListField(write_only=True)
+    groups = GroupSerializer(read_only=True, many=True)
+    permissions = PermissionSerializer(many=True, read_only=True)
     
     def create(self, validated_data):
         groups_all = validated_data.pop('groups_all')
@@ -20,9 +36,10 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         user.groups.add(*[Group.objects.get(pk=group['id']) for group in groups_all ])
         return user
+
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ['password']
 
 
 class DomicileSerializer(serializers.ModelSerializer):
@@ -139,13 +156,3 @@ class LoginResponseSerializer(serializers.ModelSerializer):
         fields = ('username', 'email','role','permissions','groups')
 
 
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = auth_models.Group
-        fields = '__all__'
-
-
-class PermissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = auth_models.Permission
-        fields = '__all__'

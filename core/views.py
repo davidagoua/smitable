@@ -1,6 +1,6 @@
 import datetime
 import functools
-
+import pandas
 import openpyxl
 from django.contrib.auth.models import Group, Permission
 from django.db import transaction
@@ -13,6 +13,7 @@ from rest_framework.authentication import TokenAuthentication
 from pharmacy.models import Produit
 from utils import get_mongodb_client, get_pusher
 from core import serializers
+from core.services import protocol
 
 from core.models import Patient, Consultation, Constante, Service, RendezVous, Hospitalisation, \
     UniteHospitalisation, Domicile, User, BoxHospitalisation
@@ -169,14 +170,19 @@ def get_rows_as_dict(worksheet):
     return rows_as_dict
 
 
+def create_patient_fromexcel(file):
+    rows = pandas.read_excel(file)
+    print(rows.get('IDENT'))
+
+
 def upload_excel_documents(file):
     print('start upload excel documents')
     sheet = openpyxl.load_workbook(file).active
     get_rows = get_rows_as_dict(sheet)
     print(get_rows[0])
 
+    db = get_mongodb_client()
     for p in get_rows:
-        db = get_mongodb_client()
         try:
             patient = Patient.objects.create(
                 code_patient=p['IDENT'],
@@ -199,16 +205,7 @@ def upload_excel_documents(file):
     print('ending upload excel documents')
 
 
-class UploadPatient(views.APIView):
 
-    def post(self, request):
-
-        file: ExcelMemoryFileUploadHandler = request.FILES['fichier']
-        print('start upload excel documents')
-        Thread(target=upload_excel_documents, args=(file,)).start()
-        return response.Response({
-                "file": "ok"
-            })
 
 
 @decorators.api_view()
@@ -248,3 +245,8 @@ class GroupListView(generics.ListCreateAPIView):
 class PermissionListView(generics.ListCreateAPIView):
     serializer_class = serializers.PermissionSerializer
     queryset = Permission.objects.all()
+
+
+class GroupViewset(viewsets.ModelViewSet):
+    serializer_class = serializers.GroupSerializer
+    queryset = Group.objects.all()

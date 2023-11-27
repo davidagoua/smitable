@@ -1,9 +1,15 @@
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
 from .views import PatientApiListView, PatientApiDetailView, ConsultationApiListView, ServiceListView, \
     ConstanteApiListView, ServiceConsultationListView, RendezVousListView, HospitalisationListView, \
     UniteHospitalisationListView, StatistiqueView, ConsultationApiCreateView, BilanInitialView, BilanInitialListView, \
-    UploadPatient, UrgenceApiListView
+     UrgenceApiListView
 from core import views
+from core import nfviews
+
+
+router = DefaultRouter()
 
 urlpatterns = [
     path('patients/', PatientApiListView.as_view()),
@@ -23,7 +29,7 @@ urlpatterns = [
     path('consultations/<int:pk>/', ConsultationApiCreateView.as_view(),),
     path('bilan-initial/<int:pk>/', BilanInitialView.as_view(),),
     path('bilan-initial/', BilanInitialListView.as_view(),),
-    path('upload-patient/', UploadPatient.as_view(),),
+    path('upload-patient/', nfviews.UploadPatientView.as_view(),),
     path('dossier-data/<str:collection>/', views.DossierDataAPIView.as_view()),
     path('dossier-data/<str:collection>/<int:pk>/', views.DossierDataAPIView.as_view()),
     path('users/', views.UserListView.as_view()),
