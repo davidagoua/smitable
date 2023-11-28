@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from core.services import protocol
+from threading import Thread
 
 
 class UploadPatientView(APIView):
@@ -10,5 +11,5 @@ class UploadPatientView(APIView):
 
     def post(self, request):
         fichier = request.FILES.get('fichier', None)
-        protocol.CreatePatient().from_excel_file(fichier)
+        Thread(target=protocol.CreatePatient.from_excel_file, args=(fichier, ))
         return Response(data={"success": request.POST.get('name',None)})

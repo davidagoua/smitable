@@ -13,7 +13,8 @@ class ServiceProtocol2(object):
 
 class CreatePatient():
 
-    def from_excel_file(self, file):
+    @staticmethod
+    def from_excel_file(file):
         df = pandas.read_excel(file)
         # db = get_mongodb_client()
         for index, p in df.iterrows():
@@ -34,8 +35,6 @@ class CreatePatient():
                                          commune=p['COMMUNE'])
             except Exception as e:
                 pass
-            else:
-                print("success")
             finally:
                 # db['patient_suivi'].insert_one(p)
                 pass
