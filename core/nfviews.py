@@ -12,5 +12,6 @@ class UploadPatientView(APIView):
     def post(self, request):
         print('starting')
         fichier = request.FILES.get('fichier', None)
-        Thread(target=protocol.CreatePatient.from_excel_file, args=(fichier, )).start()
+        #Thread(target=protocol.CreatePatient.from_excel_file, args=(fichier, )).start()
+        protocol.CreatePatient.from_excel_file(fichier)
         return Response(data={"success": request.POST.get('name',None)})
