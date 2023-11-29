@@ -1,23 +1,22 @@
 import datetime
-import functools
+
 import pandas
 import openpyxl
 from django.contrib.auth.models import Group, Permission
-from django.db import transaction
-from django_excel import ExcelMemoryFileUploadHandler
 from rest_framework import viewsets, views, generics, filters, permissions, response, mixins, decorators
-from threading import Thread
-
 from rest_framework.authentication import TokenAuthentication
-
 from pharmacy.models import Produit
-from utils import get_mongodb_client, get_pusher
+from utils import get_mongodb_client
+from rest_framework.pagination import LimitOffsetPagination
 from core import serializers
-from core.services import protocol
 
 from core.models import Patient, Consultation, Constante, Service, RendezVous, Hospitalisation, \
-    UniteHospitalisation, Domicile, User, BoxHospitalisation
+    UniteHospitalisation, User, BoxHospitalisation
 
+
+
+class DefaultPaginatorClass(LimitOffsetPagination):
+    page_size = 20
 
 class AuthUserMeView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -28,14 +27,14 @@ class AuthUserMeView(views.APIView):
         return response.Response(serializer.data)
 
 
+
+
 class PatientApiListView(generics.ListCreateAPIView):
     serializer_class = serializers.PatientSerializers
     queryset = Patient.objects.all()
     authentication_classes = [TokenAuthentication]
-    # permission_classes = (permissions.IsAuthenticated,)
-    filter_backends = [filters.SearchFilter]
-    filterset_fields = ('code_patient', 'nom', 'prenoms')
-    search_fields = ['nom', 'prenoms', 'code_patient']
+    permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = DefaultPaginatorClass
 
     def get_queryset(self):
         code_patient = self.request.GET.get('code_patient', '').upper()
@@ -48,6 +47,7 @@ class PatientApiListView(generics.ListCreateAPIView):
             prenoms__contains=prenoms,
             contact__contains=contact,
         )[:100]
+
 
 
 class PatientApiDetailView(generics.RetrieveUpdateDestroyAPIView):
