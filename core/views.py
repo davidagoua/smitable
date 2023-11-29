@@ -46,7 +46,7 @@ class PatientApiListView(generics.ListCreateAPIView):
             nom__contains=nom,
             prenoms__contains=prenoms,
             contact__contains=contact,
-        )
+        )[:200]
 
 
 
