@@ -30,8 +30,8 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['localhost','localhost:8000','host.docker.internal']
-
+ALLOWED_HOSTS = ['localhost','localhost:8000','host.docker.internal','127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['http://'+host for host in ALLOWED_HOSTS] + ['https://'+host for host in ALLOWED_HOSTS]
 
 # Application definition
 
