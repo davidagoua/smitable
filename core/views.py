@@ -34,7 +34,7 @@ class PatientApiListView(generics.ListCreateAPIView):
     queryset = Patient.objects.all()
     authentication_classes = [TokenAuthentication]
     permission_classes = (permissions.IsAuthenticated,)
-    pagination_class = DefaultPaginatorClass
+    #pagination_class = DefaultPaginatorClass
 
     def get_queryset(self):
         code_patient = self.request.GET.get('code_patient', '').upper()
