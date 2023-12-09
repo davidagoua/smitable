@@ -21,4 +21,4 @@ jobs:
 
       - name: Deploy to production
         run: |
-          ssh runner@154.56.60.195 "cd /home/ubuntu/djproduction/smitable && git pull origin master"
+          ssh root@154.56.60.195 "cd /home/ubuntu/djproduction/smitable && git pull origin master"
