@@ -1,4 +1,4 @@
-name: Pull on Push
+name: Deploy to Production
 
 on:
   push:
@@ -6,12 +6,19 @@ on:
       - master
 
 jobs:
-  pull:
+  deploy:
     runs-on: self-hosted
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Pull changes
-        run: git pull origin main
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy to production
+        run: |
+          ssh user@your-production-server "cd /path/to/your/repo && git pull origin master"
