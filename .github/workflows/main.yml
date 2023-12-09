@@ -21,4 +21,4 @@ jobs:
 
       - name: Deploy to production
         run: |
-          ssh user@your-production-server "cd /path/to/your/repo && git pull origin master"
+          ssh user@your-production-server "cd /home/ubuntu/djproduction/smitable && git pull origin master"
