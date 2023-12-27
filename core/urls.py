@@ -12,7 +12,7 @@ from core import nfviews
 router = DefaultRouter()
 
 urlpatterns = [
-    path('patients/', PatientApiListView.as_view()),
+    path('patients/', nfviews.PatientApiListView.as_view()),
     path('patients/<int:pk>/', PatientApiDetailView.as_view()),
     path('consultations/', ConsultationApiListView.as_view()),
     path('consultations_urgence/', UrgenceApiListView.as_view()),
