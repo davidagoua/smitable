@@ -36,6 +36,8 @@ class CreatePatient():
                                          commune=p['COMMUNE'])
             except KeyError as e:
                 raise e
+            except Exception as e:
+                pass
             finally:
                 # db['patient_suivi'].insert_one(p)
                 pass
