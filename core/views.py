@@ -1,22 +1,24 @@
 import datetime
-
+from django.shortcuts import render
 import pandas
 import openpyxl
 from django.contrib.auth.models import Group, Permission
 from rest_framework import viewsets, views, generics, filters, permissions, response, mixins, decorators
 from rest_framework.authentication import TokenAuthentication
+
+from core.services.protocol import CreatePatient
 from pharmacy.models import Produit
 from utils import get_mongodb_client
 from rest_framework.pagination import LimitOffsetPagination
 from core import serializers
 
 from core.models import Patient, Consultation, Constante, Service, RendezVous, Hospitalisation, \
-    UniteHospitalisation, User, BoxHospitalisation
-
+    UniteHospitalisation, User, BoxHospitalisation, Profession
 
 
 class DefaultPaginatorClass(LimitOffsetPagination):
     page_size = 20
+
 
 class AuthUserMeView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -25,8 +27,6 @@ class AuthUserMeView(views.APIView):
     def get(self, request, format=None):
         serializer = serializers.LoginResponseSerializer(request.user)
         return response.Response(serializer.data)
-
-
 
 
 class PatientApiListView(generics.ListCreateAPIView):
@@ -47,7 +47,6 @@ class PatientApiListView(generics.ListCreateAPIView):
             prenoms__contains=prenoms,
             contact__contains=contact,
         )[:200]
-
 
 
 class PatientApiDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -230,8 +229,6 @@ class UserListView(generics.ListCreateAPIView):
     queryset = User.objects.exclude(is_superuser=True)
 
 
-
-
 class UserRetrieveView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.UserSerializer
     queryset = User.objects.exclude(is_superuser=True)
@@ -250,3 +247,19 @@ class PermissionListView(generics.ListCreateAPIView):
 class GroupViewset(viewsets.ModelViewSet):
     serializer_class = serializers.GroupSerializer
     queryset = Group.objects.all()
+
+
+class ProfessionViewset(viewsets.ModelViewSet):
+    serializer_class = serializers.ProfessionSerializer
+    queryset = Profession.objects.all()
+
+
+def upload_patient_file(request):
+
+    if(request.method == 'POST'):
+        file = request.FILES['file']
+        try:
+            CreatePatient.from_excel_file(file)
+        except Exception as e:
+            raise e
+    return render(request,'upload_patient_file.html', locals())

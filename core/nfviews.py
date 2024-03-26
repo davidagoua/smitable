@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from core import serializers
-from core.models import Patient
+from core.models import Patient, Profession
 from core.services import protocol
 from threading import Thread
 
@@ -31,6 +31,11 @@ class PatientApiListView(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     pagination_class = DefaultPaginatorClass
 
+    def post(self, request, *args, **kwargs):
+        profession = request.POST.get('profession', None)
+        if profession:
+            Profession.objects.get_or_create(nom=profession)
+        return super().post(*args, **kwargs)
 
     def get_queryset(self):
         code_patient = self.request.GET.get('code_patient', '').upper()

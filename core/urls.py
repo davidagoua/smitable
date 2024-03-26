@@ -4,14 +4,16 @@ from rest_framework.routers import DefaultRouter
 from .views import PatientApiListView, PatientApiDetailView, ConsultationApiListView, ServiceListView, \
     ConstanteApiListView, ServiceConsultationListView, RendezVousListView, HospitalisationListView, \
     UniteHospitalisationListView, StatistiqueView, ConsultationApiCreateView, BilanInitialView, BilanInitialListView, \
-     UrgenceApiListView
+     UrgenceApiListView, ProfessionViewset
 from core import views
 from core import nfviews
 
 
 router = DefaultRouter()
+router.register('professions', ProfessionViewset, basename='professions')
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('patients/', nfviews.PatientApiListView.as_view()),
     path('patients/<int:pk>/', PatientApiDetailView.as_view()),
     path('consultations/', ConsultationApiListView.as_view()),
@@ -36,4 +38,5 @@ urlpatterns = [
     path('users/<int:pk>/', views.UserRetrieveView.as_view()),
     path('groups/', views.GroupListView.as_view()),
     path('permissions/', views.PermissionListView.as_view()),
+    path('upload-patient-file/', views.upload_patient_file, name='upload-patient-file')
 ]

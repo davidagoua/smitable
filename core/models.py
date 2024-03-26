@@ -90,6 +90,7 @@ class Patient(TimestampedModel):
     groupe_sanguin = models.CharField(max_length=20, null=True)
     niveau_etude = models.CharField(max_length=100, null=True, blank=True)
     employeur = models.CharField(max_length=100, null=True, blank=True)
+    code_sero = models.CharField(max_length=100, null=True, blank=True)
 
     def save(
             self, *args, **kwargs
@@ -292,3 +293,10 @@ def on_hospitalisation_save(sender, instance, created, **kwargs):
         box.occuper = True
         box.occupant = instance.patient
         box.save()
+
+
+class Profession(models.Model):
+    nom = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nom

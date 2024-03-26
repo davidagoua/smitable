@@ -156,3 +156,9 @@ class LoginResponseSerializer(serializers.ModelSerializer):
         fields = ('username', 'email','role','permissions','groups')
 
 
+class ProfessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profession
+        fields = ['nom']
+
+
