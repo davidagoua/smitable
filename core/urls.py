@@ -15,6 +15,7 @@ router.register('professions', ProfessionViewset, basename='professions')
 urlpatterns = [
     path('', include(router.urls)),
     path('patients/', views.PatientApiListView.as_view()),
+    path('patients-paginate/', nfviews.PatientApiListView.as_view()),
     path('patients/<int:pk>/', PatientApiDetailView.as_view()),
     path('consultations/', ConsultationApiListView.as_view()),
     path('consultations_urgence/', UrgenceApiListView.as_view()),

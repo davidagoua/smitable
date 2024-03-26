@@ -16,6 +16,9 @@ class PatientAdmin(admin.ModelAdmin):
         'id','created_at','code_patient','status',
         'nom','prenoms','date_naissance','lieu_naissance'
     ]
+    search_fields = [
+        'code_patient','nom'
+    ]
 
 
 @admin.register(Constante)
