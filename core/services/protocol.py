@@ -15,6 +15,7 @@ class CreatePatient():
 
     @staticmethod
     def from_excel_file(file):
+        print("debut")
         df = pandas.read_excel(file)
         # db = get_mongodb_client()
         for index, p in df.iterrows():

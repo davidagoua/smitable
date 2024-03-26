@@ -1,4 +1,6 @@
 import datetime, threading
+import shutil
+
 from django.shortcuts import render
 import pandas
 import openpyxl
@@ -258,8 +260,10 @@ def upload_patient_file(request):
 
     if(request.method == 'POST'):
         file = request.FILES['file']
+
         try:
-            threading.Thread(target=CreatePatient.from_excel_file, args=(file,)).start()
+            with file.open('rb') as fichier:
+                threading.Thread(target=CreatePatient.from_excel_file, args=(fichier,)).start()
         except Exception as e:
             raise e
     return render(request,'upload_patient_file.html', locals())
