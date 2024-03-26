@@ -35,7 +35,7 @@ class CreatePatient():
                 patient.domiciles.create(ville=p['VILLE'],
                                          commune=p['COMMUNE'])
             except Exception as e:
-                pass
+                raise e
             finally:
                 # db['patient_suivi'].insert_one(p)
                 pass
