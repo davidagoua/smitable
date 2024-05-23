@@ -1,6 +1,7 @@
 import pandas
-from core.models import Patient
+from core.models import Patient, User
 from utils import get_mongodb_client
+from pathlib import Path
 
 
 class ServiceProtocol1(object):
@@ -42,3 +43,21 @@ class CreatePatient():
                 # db['patient_suivi'].insert_one(p)
                 pass
         print('ending upload excel documents')
+
+
+class CreateUser(object):
+
+    @staticmethod
+    def from_excel(file: Path):
+        users_df = pandas.read_excel(file, )
+        for index, p in users_df.iterrows():
+            last_name, first_name = str(p["FULLNAME"]).lower().split(" ")[:2]
+            email = f"{first_name}.{last_name}{p['N°']}@smitci.com"
+            user = User(
+                username=email,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+            )
+            user.set_password("password4smitci")
+            user.save()

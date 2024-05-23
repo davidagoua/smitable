@@ -39,5 +39,6 @@ urlpatterns = [
     path('users/<int:pk>/', views.UserRetrieveView.as_view()),
     path('groups/', views.GroupListView.as_view()),
     path('permissions/', views.PermissionListView.as_view()),
-    path('upload-patient-file/', views.upload_patient_file, name='upload-patient-file')
+    path('upload-patient-file/', views.upload_patient_file, name='upload-patient-file'),
+    path('upload-users-file/', nfviews.UploadUsersView.as_view(), name='upload-patient-file')
 ]

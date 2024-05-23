@@ -171,9 +171,6 @@ def get_rows_as_dict(worksheet):
     return rows_as_dict
 
 
-def create_patient_fromexcel(file):
-    rows = pandas.read_excel(file)
-    print(rows.get('IDENT'))
 
 
 def upload_excel_documents(file):
