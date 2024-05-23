@@ -31,8 +31,8 @@ class UploadUsersView(APIView):
     def post(self, request):
         fichier = request.FILES.get('fichier', None)
         #Thread(target=protocol.CreatePatient.from_excel_file, args=(fichier, )).start()
-        protocol.CreateUser.from_excel(fichier)
-        return Response(data={"success": request.POST.get('name',None)})
+        res = protocol.CreateUser.from_excel(fichier)
+        return Response(data={"success": res})
 
 
 class PatientApiListView(generics.ListCreateAPIView):

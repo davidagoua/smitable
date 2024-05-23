@@ -1,5 +1,6 @@
 import pandas
 from core.models import Patient, User
+from django.contrib.auth.models import Group
 from utils import get_mongodb_client
 from pathlib import Path
 
@@ -49,15 +50,30 @@ class CreateUser(object):
 
     @staticmethod
     def from_excel(file: Path):
-        users_df = pandas.read_excel(file, )
-        for index, p in users_df.iterrows():
-            last_name, first_name = str(p["FULLNAME"]).lower().split(" ")[:2]
-            email = f"{first_name}.{last_name}{p['N°']}@smitci.com"
-            user = User(
-                username=email,
-                email=email,
-                first_name=first_name,
-                last_name=last_name,
-            )
-            user.set_password("password4smitci")
-            user.save()
+        try:
+            users_df = pandas.read_excel(file, )
+            for index, p in users_df.iterrows():
+                last_name, first_name = str(p["FULLNAME"]) \
+                    .replace("'","")\
+                    .replace(".","")\
+                    .lower().split(" ")[:2]
+                email = f"{first_name}.{last_name}{p['N°']}@smitci.com"
+                user = User(
+                    username=email,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                )
+                user.set_password("password4smitci")
+                user.save()
+
+                if p['FONCTION'] in ("Chef de service",):
+                    user.groups.add(Group.objects.get(name="administrateur"))
+                if "Médecin" in p['FONCTION']:
+                    user.groups.add(Group.objects.get(name="hospitalisation"))
+                if "pharmacie" in p['FONCTION']:
+                    user.groups.add(Group.objects.get(name="hospitalisation"))
+        except Exception as e:
+            raise e
+        finally:
+            return True
