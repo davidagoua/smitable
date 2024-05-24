@@ -73,7 +73,7 @@ class CreateUser(object):
                     user.groups.add(Group.objects.get(name="hospitalisation"))
                 if "pharmacie" in p['FONCTION']:
                     user.groups.add(Group.objects.get(name="hospitalisation"))
+
+                return True
         except Exception as e:
             raise e
-        finally:
-            return True
